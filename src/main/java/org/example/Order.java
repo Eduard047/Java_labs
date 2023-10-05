@@ -1,30 +1,51 @@
 package org.example;
+
 import java.util.List;
 
 public class Order {
     private int orderId;
-    private List<Product> products;
+    private Cart cart;
     private String status;
 
-    public Order(int orderId, List<Product> products) {
+    public Order(int orderId, Cart cart) {
         this.orderId = orderId;
-        this.products = products;
-        this.status = "Processing";
+        this.cart = cart;
+        this.status = "В обробці";
     }
 
-    public int getOrderId() {
-        return orderId;
+    public double getTotalPrice() {
+        List<Product> products = cart.getProducts();
+        double totalPrice = 0.0;
+
+        for (Product product : products) {
+            totalPrice += product.getPrice();
+        }
+
+        return totalPrice;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public void placeOrder() {
+        cart.placeOrder();
+        this.status = "Виконано";
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 }

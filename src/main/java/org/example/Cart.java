@@ -20,4 +20,7 @@ public class Cart {
     public List<Product> getProducts() {
         return products;
     }
+
+    public void placeOrder() {
+    }
 }
