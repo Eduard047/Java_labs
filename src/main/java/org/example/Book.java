@@ -1,5 +1,7 @@
 package org.example;
 
+
+
 public class Book extends Item {
     private String author;
 
@@ -15,13 +17,15 @@ public class Book extends Item {
         }
     }
 
-    private void setBorrowed(boolean b) {
-    }
-
     @Override
     public void returnItem() {
         if (isBorrowed()) {
             setBorrowed(false);
         }
     }
+
+    private void setBorrowed(boolean borrowed) {
+        this.isBorrowed = borrowed;
+    }
 }
+

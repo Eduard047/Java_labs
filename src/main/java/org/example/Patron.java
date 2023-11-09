@@ -29,6 +29,6 @@ public class Patron {
     }
 
     public String getName() {
-        return null;
+        return this.name;
     }
 }

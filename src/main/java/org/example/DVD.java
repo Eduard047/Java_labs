@@ -15,13 +15,14 @@ public class DVD extends Item {
         }
     }
 
-    private void setBorrowed(boolean b) {
-    }
-
     @Override
     public void returnItem() {
         if (isBorrowed()) {
             setBorrowed(false);
         }
+    }
+
+    private void setBorrowed(boolean borrowed) {
+        this.isBorrowed = borrowed;
     }
 }

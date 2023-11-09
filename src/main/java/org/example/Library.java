@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Library implements IManageable {
-    private List<Item> items;
-    private List<Patron> patrons;
+    List<Item> items;
+    List<Patron> patrons;
 
     public Library() {
         items = new ArrayList<>();

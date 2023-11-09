@@ -3,7 +3,7 @@ package org.example;
 public abstract class Item {
     private String title;
     private String uniqueID;
-    private boolean isBorrowed;
+    boolean isBorrowed;
 
     public Item(String title, String uniqueID) {
         this.title = title;
