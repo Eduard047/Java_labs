@@ -1,2 +1,4 @@
-package org.example;public class PalindromeChecker {
+package org.example;
+
+public class PalindromeChecker {
 }
