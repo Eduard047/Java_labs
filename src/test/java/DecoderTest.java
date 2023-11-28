@@ -1,6 +1,3 @@
-
-
-
 import org.example.Decoder;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
