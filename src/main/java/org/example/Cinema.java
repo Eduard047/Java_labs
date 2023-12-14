@@ -3,7 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class Cinema {
 
@@ -47,13 +47,29 @@ public class Cinema {
     public void printSeatingArrangement(int hallNumber) {
         System.out.println("Схема розміщення місць для " + hallNames[hallNumber] + ":");
 
+        // Виведення номерів місць у верхньому рядку
+        System.out.print("    ");
+        for (int seat = 1; seat <= NUM_SEATS_PER_ROW; seat++) {
+            System.out.printf("%-3s", seat);
+        }
+        System.out.println();
+
         for (int row = 1; row <= NUM_ROWS; row++) {
+            // Виведення номера ряду зліва
+            System.out.print(String.format("%-3s", row) + "|");
             for (int seat = 1; seat <= NUM_SEATS_PER_ROW; seat++) {
-                System.out.print(seatingArrangement[hallNumber][row - 1][seat - 1] + " ");
+                int seatNumber = seatingArrangement[hallNumber][row - 1][seat - 1];
+                if (seatNumber == 0) {
+                    System.out.printf("%-3s", seatNumber);
+                } else {
+                    System.out.printf(" %-2s", seatNumber);
+                }
             }
             System.out.println();
         }
     }
+
+
 
     // Оновлений метод для бронювання місць
     public void bookSeats(int hallNumber, int row, int[] seats) {
@@ -110,13 +126,32 @@ public class Cinema {
             printSeatingArrangement(hallNumber);
         }
     }
+    // Перевірка наявності заданої кількості послідовних місць
+    public boolean checkAvailability(int hallNumber, int row, int[] seats) {
+        for (int seat : seats) {
+            if (seat < 1 || seat > NUM_SEATS_PER_ROW || isSeatBooked(hallNumber, row, seat)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Скасування бронювання місць
+    public void cancelBooking(int hallNumber, int row, int[] seats) {
+        for (int seat : seats) {
+            if (isSeatBooked(hallNumber, row, seat)) {
+                seatingArrangement[hallNumber][row - 1][seat - 1] = 0; // Змінено на 0
+                System.out.println("Скасування бронювання місця " + seat + " у ряду " + row + " залу " + hallNames[hallNumber] + ".");
+            } else {
+                System.out.println("Місце " + seat + " у ряду " + row + " залу " + hallNames[hallNumber] + " не було заброньоване і не може бути скасоване.");
+            }
+        }
+    }
 
 
-    private boolean isSeatBooked(int hallNumber, int row, int seat) {
+    public boolean isSeatBooked(int hallNumber, int row, int seat) {
         return seatingArrangement[hallNumber][row - 1][seat - 1] == 1;
     }
 
-    private boolean isSeatFree(int hallNumber, int row, int seat) {
-        return seatingArrangement[hallNumber][row][seat] == 0;
-    }
+
 }
