@@ -28,17 +28,16 @@ public class ECommercePlatform {
         this.users.put(user.getId(), user);
     }
 
-    public void createOrder(Order order) {
+    public void createOrder(int orderId, int userId, Map<Product, Integer> cart, double totalPrice) {
+        Order order = new Order(orderId, userId, cart, totalPrice);
         order.validate();
-
         List<Product> reservedProducts = reserveProducts(order);
-
         if (reservedProducts.isEmpty()) {
             throw new RuntimeException("Not enough stock for order");
         }
-
-        this.orders.put(order.getId(), order);
+        this.orders.put(orderId, order);
     }
+
 
     public List<Product> getAvailableProducts() {
         List<Product> products = getProductsFromCache(PRODUCTS_CACHE_SIZE);
@@ -109,5 +108,29 @@ public class ECommercePlatform {
         }
 
         return reservedProducts;
+    }
+
+    public List<Product> getProducts(Comparator<Product> comparator) {
+        List<Product> products = new ArrayList<>(this.products.values());
+
+
+        if (comparator != null) {
+            products.sort(comparator);
+        }
+
+        return products;
+    }
+
+    public void processOrders() {
+
+    }
+
+    public void recommendProducts(User user) {
+
+        System.out.println("Рекомендовані товари для користувача " + user.getUsername() + ":");
+        List<Product> recommendedProducts = new ArrayList<>(); // Заглушка, замените на реальную логику
+        for (Product product : recommendedProducts) {
+            System.out.println(product);
+        }
     }
 }

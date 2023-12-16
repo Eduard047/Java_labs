@@ -1,15 +1,15 @@
 package org.example;
 
-import java.util.Comparator;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.*;
 
 public class ECommerceDemo {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         ECommercePlatform platform = new ECommercePlatform();
 
         User user1 = new User(1, "Andrew Davies");
-        User user2 = new User(2, "Andrew Davies");
+        User user2 = new User(2, "John Smith");
         platform.addUser(user1);
         platform.addUser(user2);
 
@@ -18,33 +18,33 @@ public class ECommerceDemo {
         platform.addProduct(product1);
         platform.addProduct(product2);
 
-        user1.addProductToCart(product1, 2);
-        user2.addProductToCart(product2, 1);
 
-        platform.createOrder(new Order(1, user1.getId(), user1.getCart(), 2000.0));
-        platform.createOrder(new Order(2, user2.getId(), user2.getCart(), 2000.0));
+        user1.addProductToCart(product1, 1);
 
+        user2.addProductToCart(product2, 2);
 
-// Виводимо список доступних товарів, відсортованих за назвою
-        System.out.println("Доступні товари, відсортовані за назвою:");
-        List<Product> products = platform.getAvailableProducts();
-        products.sort(Comparator.comparing(Product::getName));
-        for (Product product : products) {
-            System.out.println(product);
+        platform.createOrder(1, user1.getId(), user1.getCart(), 1000.0);
+
+        platform.createOrder(2, user2.getId(), user2.getCart(), 4000.0);
+
+        platform.processOrders();
+
+        platform.recommendProducts(user1);
+        platform.recommendProducts(user2);
+
+        System.out.println("Кінцевий стан користувачів:");
+        for (User user : platform.getUsers()) {
+            System.out.println(user.toString());
         }
 
-// Виводимо список доступних товарів, відсортованих за запасами
-        System.out.println("Доступні товари, відсортовані за запасами:");
-        products.sort(Comparator.comparing(Product::getStock));
-        for (Product product : products) {
-            System.out.println(product);
+        System.out.println("Кінцевий стан товарів:");
+        for (Product product : platform.getProducts(null)) {
+            System.out.println(product.toString());
         }
 
-// Виводимо список доступних товарів, відсортованих за ціною
-        System.out.println("Доступні товари, відсортовані за ціною:");
-        products.sort(Comparator.comparing(Product::getPrice));
-        for (Product product : products) {
-            System.out.println(product);
+        System.out.println("Кінцевий стан замовлень:");
+        for (Order order : platform.getOrders()) {
+            System.out.println(order.toString());
         }
     }
 }
