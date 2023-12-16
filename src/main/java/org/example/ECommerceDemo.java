@@ -1,5 +1,8 @@
 package org.example;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class ECommerceDemo {
 
     public static void main(String[] args) {
@@ -21,19 +24,27 @@ public class ECommerceDemo {
         platform.createOrder(new Order(1, user1.getId(), user1.getCart(), 2000.0));
         platform.createOrder(new Order(2, user2.getId(), user2.getCart(), 2000.0));
 
-        System.out.println("Доступні товари:");
-        for (Product product : platform.getAvailableProducts()) {
+
+// Виводимо список доступних товарів, відсортованих за назвою
+        System.out.println("Доступні товари, відсортовані за назвою:");
+        List<Product> products = platform.getAvailableProducts();
+        products.sort(Comparator.comparing(Product::getName));
+        for (Product product : products) {
             System.out.println(product);
         }
 
-        System.out.println("Користувачі:");
-        for (User user : platform.getUsers()) {
-            System.out.println(user);
+// Виводимо список доступних товарів, відсортованих за запасами
+        System.out.println("Доступні товари, відсортовані за запасами:");
+        products.sort(Comparator.comparing(Product::getStock));
+        for (Product product : products) {
+            System.out.println(product);
         }
 
-        System.out.println("Замовлення:");
-        for (Order order : platform.getOrders()) {
-            System.out.println(order);
+// Виводимо список доступних товарів, відсортованих за ціною
+        System.out.println("Доступні товари, відсортовані за ціною:");
+        products.sort(Comparator.comparing(Product::getPrice));
+        for (Product product : products) {
+            System.out.println(product);
         }
     }
 }

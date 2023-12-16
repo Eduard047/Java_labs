@@ -60,6 +60,6 @@ public class Product implements Comparable<Product> {
 
     @Override
     public int compareTo(Product o) {
-        return this.name.compareTo(o.name);
+        return Double.compare(this.price, o.price);
     }
 }

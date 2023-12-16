@@ -1,70 +1,90 @@
 package org.example;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 public class ECommercePlatform {
 
-    private Map<Integer, User> users;
-    private Map<Integer, Product> products;
-    private Map<Integer, Order> orders;
+    private static final int PRODUCTS_CACHE_SIZE = 100;
+    private static final int USERS_CACHE_SIZE = 1000;
+    private static final int ORDERS_CACHE_SIZE = 10000;
+
+    private ConcurrentHashMap<Integer, Product> products;
+    private ConcurrentHashMap<Integer, User> users;
+    private ConcurrentHashMap<Integer, Order> orders;
 
     public ECommercePlatform() {
-        this.users = new HashMap<>();
-        this.products = new HashMap<>();
-        this.orders = new HashMap<>();
-    }
-
-    public void addUser(User user) {
-        this.users.put(user.getId(), user);
+        this.products = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<>();
+        this.orders = new ConcurrentHashMap<>();
     }
 
     public void addProduct(Product product) {
         this.products.put(product.getId(), product);
     }
 
+    public void addUser(User user) {
+        this.users.put(user.getId(), user);
+    }
+
     public void createOrder(Order order) {
         order.validate();
-        this.orders.put(order.getId(), order);
 
-        for (Map.Entry<Product, Integer> entry : order.getOrderDetails().entrySet()) {
-            Product product = entry.getKey();
-            int quantity = entry.getValue();
+        List<Product> reservedProducts = reserveProducts(order);
 
-            product.setStock(product.getStock() - quantity);
+        if (reservedProducts.isEmpty()) {
+            throw new RuntimeException("Not enough stock for order");
         }
+
+        this.orders.put(order.getId(), order);
     }
 
     public List<Product> getAvailableProducts() {
-        List<Product> availableProducts = new ArrayList<>();
+        List<Product> products = getProductsFromCache(PRODUCTS_CACHE_SIZE);
 
-        for (Product product : this.products.values()) {
-            if (product.getStock() > 0) {
-                availableProducts.add(product);
-            }
+        if (products == null) {
+            products = getAvailableProductsFromDatabase();
+            putProductsToCache(products);
         }
 
-        return availableProducts;
+        return products;
+    }
+
+    private List<Product> getProductsFromCache(int cacheSize) {
+        return this.products.values().stream()
+                .filter(product -> product.getStock() > 0)
+                .limit(cacheSize)
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> getAvailableProductsFromDatabase() {
+        List<Product> products = new ArrayList<>();
+
+
+
+        return products;
+    }
+
+    private void putProductsToCache(List<Product> products) {
+        this.products.putAll(products.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product)));
     }
 
     public List<User> getUsers() {
-        List<User> users = new ArrayList<>();
+        return getUsersFromCache(USERS_CACHE_SIZE);
+    }
 
-        for (User user : this.users.values()) {
-            users.add(user);
-        }
-
-        return users;
+    private List<User> getUsersFromCache(int cacheSize) {
+        return new ArrayList<>(this.users.values());
     }
 
     public List<Order> getOrders() {
-        List<Order> orders = new ArrayList<>();
+        return getOrdersFromCache(ORDERS_CACHE_SIZE);
+    }
 
-        for (Order order : this.orders.values()) {
-            orders.add(order);
-        }
-
-        return orders;
+    private List<Order> getOrdersFromCache(int cacheSize) {
+        return new ArrayList<>(this.orders.values());
     }
 
     public void updateProductStock(int productId, int quantity) {
@@ -73,5 +93,21 @@ public class ECommercePlatform {
         if (product != null) {
             product.setStock(product.getStock() + quantity);
         }
+    }
+
+    private List<Product> reserveProducts(Order order) {
+        List<Product> reservedProducts = new ArrayList<>();
+
+        for (Map.Entry<Product, Integer> entry : order.getOrderDetails().entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+
+            if (product.getStock() >= quantity) {
+                product.setStock(product.getStock() - quantity);
+                reservedProducts.add(product);
+            }
+        }
+
+        return reservedProducts;
     }
 }
